@@ -2,9 +2,10 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 // /* Imports */
-// import java.util.HashMap;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
+import java.util.HashMap;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveBase implements RobotWrapper
 {
@@ -23,10 +24,12 @@ public class DriveBase implements RobotWrapper
      */
     public enum DriveType
     {   // Manoli will fix later, don't worry :D
-        TANK, //...
+        XBOX_TANK //...
     }
 
     DriveType drive;
+    Timer timer;
+    ControlStation controlStation;
 
     /**
      * Object declarations
@@ -37,8 +40,9 @@ public class DriveBase implements RobotWrapper
     /**
      * Non-constant variables
      */
-    // HashMap<String, TalonSRX> motorControllers;
-    // HashMap<String, Integer> motorControllerPorts = new HashMap<String, Integer>();
+    HashMap<String, Integer> motorControllerPorts;
+    HashMap<String, TalonSRX> motorControllers;
+    // HashMap<String, Joystick> joysticks;
 
 
     /**
@@ -51,33 +55,93 @@ public class DriveBase implements RobotWrapper
         talRF = new TalonSRX(TAL_RF_PORT);
         talLM = new TalonSRX(TAL_LM_PORT);
         talLF = new TalonSRX(TAL_LF_PORT);
-        xbox = new Joystick(0);
+        // xbox = new Joystick(0);
+        timer = new Timer();
+        controlStation = Robot.controlStation;
 
         // Manoli will fix later, don't worry :D
-        // drive = type;   //Initialize Drivetype enum as [type].
-        // motorControllers = new HashMap<String, TalonSRX>();
+        drive = type;   // Initialize Drivetype enum as [type].
 
-        // switch(drive)
-        // {
-        //     case TANK:
-        //     motorControllers.put("LM", new TalonSRX(0));
-        //     motorControllers.put("LF", new TalonSRX(0));
-        //     motorControllers.put("RM", new TalonSRX(0));
-        //     motorControllers.put("RF", new TalonSRX(0));
-        // }
-        // setDrive();    //Set DriveType to given configuration
+        motorControllerPorts = new HashMap<String, Integer>();
+        motorControllers = new HashMap<String, TalonSRX>();
+        // joysticks = new HashMap<String, Joystick>();
+
+        switch(drive)
+        {
+            case XBOX_TANK:
+            motorControllerPorts.put("LM", /* LM Port Here */ 0);
+            motorControllerPorts.put("LF", /* LF Port Here */ 0);
+            motorControllerPorts.put("RM", /* RM Port Here */ 0);
+            motorControllerPorts.put("RF", /* RF Port Here */ 0);
+
+            motorControllers.put("LM", new TalonSRX(motorControllerPorts.get("LM")));
+            motorControllers.put("LF", new TalonSRX(motorControllerPorts.get("LF")));
+            motorControllers.put("RM", new TalonSRX(motorControllerPorts.get("RM")));
+            motorControllers.put("RF", new TalonSRX(motorControllerPorts.get("RF")));
+
+            invertController("RM");
+            invertController("RF");
+
+            controlStation.addJoystick("Xbox", /* Xbox Controller Port Here */ 0);
+            controlStation.assignAxis("Left Axis", "Xbox", /* Left Side Xbox Axis Here */ 1);
+            controlStation.assignAxis("Right Axis", "Xbox", /* Right Side Xbox Axis Here */ 5);
+
+            break;
+
+            default:
+            System.out.println("Drive Base not initialized - No drive mode given for DriveBase.java.");
+            
+            break;
+        }
     }
 
     public void init(RunMode mode)
     {
-        
+        timer.reset();
+        switch(mode)
+        {
+            case Auto:
+            reset();
+            
+            break;
+
+            case Teleop:
+            break;
+
+            case Test:
+            timer.start();
+            break;
+        }
     }
 
     public void update(RunMode mode)
     {
-        if(mode == RunMode.Test)
+        // if(mode == RunMode.Test)
+        // {
+        //     joystickDrive(xbox.getRawAxis(1), -xbox.getRawAxis(5));
+        // }
+
+        switch(mode)
         {
-            joystickDrive(xbox.getRawAxis(1), -xbox.getRawAxis(5));
+            case Auto:
+
+            break;
+
+            case Teleop:
+            joystickDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(5));
+            break;
+
+            case Test:
+            if (timer.get() < 2)
+            {
+                joystickDrive(1/2, 1/2);
+            }
+            else
+            {
+                joystickDrive(0, 0);
+                timer.stop();
+            }
+            break;
         }
     }
 
@@ -88,6 +152,12 @@ public class DriveBase implements RobotWrapper
 
     public void joystickDrive(double axisL, double axisR)
     {
+        switch(drive)
+        {
+            case XBOX_TANK:
+
+            break;
+        }
         if(Math.abs(axisL) > 0.9)
         {
             talLM.set(ControlMode.PercentOutput, (0.9 / 2) * (axisL/Math.abs(axisL)));
@@ -118,5 +188,16 @@ public class DriveBase implements RobotWrapper
             talRM.set(ControlMode.PercentOutput, axisR / 2);
             talRF.set(ControlMode.Follower, TAL_RM_PORT);
         }
+
+        switch(drive)
+        {
+            case XBOX_TANK:
+            
+        }
+    }
+
+    private void invertController(String c)
+    {
+        motorControllers.get(c).setInverted(!motorControllers.get(c).getInverted());
     }
 }
