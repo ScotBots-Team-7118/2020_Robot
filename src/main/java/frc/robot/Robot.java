@@ -7,11 +7,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 /* Imports */
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.RobotWrapper.RunMode;
 import frc.robot.DriveBase.DriveType;
+import frc.robot.Intake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +24,7 @@ public class Robot extends TimedRobot
 {
   DriveBase driveBase;
   Gyroscope gyro;
+  Intake intake;
   
 
   /**
@@ -45,6 +46,7 @@ public class Robot extends TimedRobot
   {
     gyro.init(RunMode.Auto);
     driveBase.init(RunMode.Auto);
+    intake.init(RunMode.Auto);
   }
 
   /**
@@ -55,6 +57,7 @@ public class Robot extends TimedRobot
   {
     gyro.update(RunMode.Auto);
     driveBase.update(RunMode.Auto);
+    intake.update(RunMode.Auto);
   }
 
   /**
@@ -64,6 +67,7 @@ public class Robot extends TimedRobot
   public void teleopInit() {
     gyro.init(RunMode.Teleop);
     driveBase.init(RunMode.Teleop);
+    intake.init(RunMode.Teleop);
   }
 
   /**
@@ -74,6 +78,7 @@ public class Robot extends TimedRobot
   {
     gyro.update(RunMode.Teleop);
     driveBase.update(RunMode.Teleop);
+    intake.update(RunMode.Teleop);
   }
 
   /**
