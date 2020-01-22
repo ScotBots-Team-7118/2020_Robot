@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 /* Imports */
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.RobotWrapper.RunMode;
@@ -23,7 +22,8 @@ import frc.robot.DriveBase.DriveType;
 public class Robot extends TimedRobot
 {
   DriveBase driveBase;
-  Gyroscope gyro;
+  public static ControlStation controlStation;
+  // Gyroscope gyro;
   
 
   /**
@@ -33,8 +33,9 @@ public class Robot extends TimedRobot
   @Override
   public void robotInit()
   {
-    driveBase = new DriveBase(DriveType.TANK);
-    gyro = new Gyroscope();
+    controlStation = new ControlStation();
+    driveBase = new DriveBase(DriveType.XBOX_TANK);
+    // gyro = new Gyroscope();
   }
 
   /**
@@ -43,7 +44,7 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousInit()
   {
-    gyro.init(RunMode.Auto);
+    // gyro.init(RunMode.Auto);
     driveBase.init(RunMode.Auto);
   }
 
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic()
   {
-    gyro.update(RunMode.Auto);
+    // gyro.update(RunMode.Auto);
     driveBase.update(RunMode.Auto);
   }
 
@@ -62,7 +63,7 @@ public class Robot extends TimedRobot
    */
   @Override
   public void teleopInit() {
-    gyro.init(RunMode.Teleop);
+    // gyro.init(RunMode.Teleop);
     driveBase.init(RunMode.Teleop);
   }
 
@@ -72,8 +73,17 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
-    gyro.update(RunMode.Teleop);
+    // gyro.update(RunMode.Teleop);
     driveBase.update(RunMode.Teleop);
+  }
+
+  /**
+   * This function is called during test mode initialization
+   */
+  @Override
+  public void testInit()
+  {
+    driveBase.init(RunMode.Test);
   }
 
   /**
@@ -82,7 +92,13 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic()
   {
-    gyro.update(RunMode.Test);
+    // gyro.update(RunMode.Test);
     driveBase.update(RunMode.Test);
+  }
+
+  @Override
+  public void disabledInit()
+  {
+    driveBase.timer.stop();
   }
 }
