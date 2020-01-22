@@ -78,6 +78,15 @@ public class Robot extends TimedRobot
   }
 
   /**
+   * This function is called during test mode initialization
+   */
+  @Override
+  public void testInit()
+  {
+    driveBase.init(RunMode.Test);
+  }
+
+  /**
    * This function is called periodically during test mode.
    */
   @Override
@@ -85,5 +94,11 @@ public class Robot extends TimedRobot
   {
     // gyro.update(RunMode.Test);
     driveBase.update(RunMode.Test);
+  }
+
+  @Override
+  public void disabledInit()
+  {
+    driveBase.timer.stop();
   }
 }
